@@ -1,0 +1,106 @@
+# 后端 Agent 说明
+
+## 领域与代码映射
+
+- `oid` 和 `workspace_id` 是同一个工作空间 ID 的历史命名。
+- `AssistantModel.type` 实际值域 `0`–`4`：`0` 普通小助手；`1` 高级应用；`4` 页面嵌入；`2`、`3` 为遗留兼容值，行为分别等同 `0`、`1`，当前无创建入口。
+- `AssistantModel.domain` 表示对接目标系统的域名，不是业务领域。
+- `DataTraining` 是「SQL 示例库」概念的持久化命名。
+- `Chat.chat_type` 目前只有 `chat` 一个有效值；`datasource` 是为未实现的表字段备注自动生成功能预留的遗留值。
+- `ChatRecord.recommended_question` 同时承载两种内容：开场记录中是数据源配置的推荐问题，普通记录中是模型生成的猜测问题。
+
+## 代码组织
+
+- 领域代码放在 `backend/apps/<domain>/`。多数域采用 `api/`、`crud/` 或 `curd/`、`models/` 分层；`schemas/` 仅 `system` 和 `settings` 有，`chat` 另有 `task/`，`ai_model`、`db`、`mcp`、`template`、`swagger` 不遵循该布局——新代码跟随所在域的既有形态。
+- 项目同时存在 `crud` 和 `curd` 拼写；不要为统一命名制造无关重构。
+- 新 router 注册到 `backend/apps/api.py`。
+- 应用组装、中间件、MCP 和 MCP 图片静态挂载属于 `backend/main.py`；`init_fastapi_app` 在此触发 xpack 初始化，前端 dist 静态挂载与 `/xpack_static` 提取由 xpack 包内完成（见 `docs/agents/xpack.md`）。
+- SQLModel 结构变更必须配套 Alembic 迁移；细节见 `docs/agents/migrations.md`。
+- 用户可见后端消息使用 `backend/locales/`，不要硬编码新文案。
+
+## API 黄金路径
+
+新 endpoint 参考 `terminology`、`data_training` 域和 `datasource` 域内的 `recommended_problem` 模块（`backend/apps/datasource/api/recommended_problem.py`）的分层：
+
+1. 在 `api/<domain>.py` 定义 router、prefix、tags 和 Swagger summary；
+2. 使用 `SessionDep`、`CurrentUser`、`Trans` 等依赖注入；
+3. 资源型接口配置 `@require_permissions`，确认 `keyExpression` 指向真实资源；
+4. 需要审计的操作配置 `@system_log`，新代码优先让权限装饰器位于审计装饰器外层，只记录已授权操作；
+5. handler 只做参数解析、权限上下文提取和分支，业务规则下沉到 CRUD/service；
+6. 返回领域对象、DTO 或既有分页 dict；正常 JSON 由 `ResponseMiddleware` 包装，不要手工包一层 `code/data/msg`；
+7. 用户可见异常通过 `Trans` 使用 locale key；`HTTPException` 留在 API 层，不要让 CRUD 依赖 FastAPI 响应细节。
+
+Endpoint 命名沿既有风格：
+
+- 分页：`GET /page/{current_page}/{page_size}`；
+- 新增或更新：`PUT ""`，按 `info.id` 分支；
+- 删除：`DELETE ""`，传 ID 列表；
+- 启用/禁用：`GET /{id}/enable/{enabled}`；
+- 导出：`GET /export`；
+- 导入：`POST /uploadExcel`。
+
+只在确实与现有 API 兼容性冲突时发明新形态，并说明原因。
+
+## CRUD 与查询
+
+- 查询构建参考 `build_<entity>_query` 的分层：
+  1. `get_<entity>_base_query` 构造工作空间过滤；
+  2. `build_<entity>_query` 追加搜索、作用域、join、count 和分页；
+  3. `execute_<entity>_query` 转换为 DTO/result；
+  4. `page_<entity>` 返回 API 需要的分页元数据。
+- 默认过滤当前 `current_user.oid`；管理员或助手场景必须显式说明为何可以切换工作空间。
+- 使用 SQLAlchemy `select` / `and_` / `or_` 表达查询；不要为用户输入拼接 SQL 字符串。
+- 分页先 count，再计算 `total_pages`，最后构造 offset/limit 子查询。
+- 创建/更新前完成重复性、必填和作用域校验；不要先写入再依赖唯一约束报错。
+- 事务提交通常发生在 CRUD/service 边界；API handler 不要随意中途 commit。
+- embedding、缓存清理或后台任务沿用当前领域的线程任务模式，不在请求路径中阻塞等待长任务。
+
+## 异步与阻塞
+
+- FastAPI handler 可以是 `async def`，但不要在事件循环中执行外部 HTTP、pandas 大文件解析、CPU 密集转换或长时间文件 IO。
+- 这些操作参考现有 `asyncio.to_thread(inner)` 模式。
+- 数据库 session 由依赖注入管理；在线程中需要新 session 时使用对应 `session_maker()` 并确保清理。
+- 不要把 `asyncio.to_thread` 当成绕过权限或事务边界的手段。
+
+## 模型与 DTO
+
+- 表模型继承 `SQLModel, table=True`；输入/输出 DTO 使用 Pydantic BaseModel 或非 table SQLModel。
+- 大 ID 使用 `BigInteger`；返回给前端时按既有 DTO 规则处理超过 JavaScript 安全整数的情况。
+- 时间、启用状态、工作空间归属和高级应用/数据源作用域要显式建模，不依赖调用方隐式状态。
+- 新增字段同时考虑迁移、导入/导出、embedding、缓存和 xpack 调用。
+
+## 安全与事务边界
+
+- 保留认证、工作空间/数据源权限、审计日志和既有错误响应模式；不要在 handler 中绕过它们。
+- 生成 SQL、路径、Host 头和上传文件都按不可信输入处理。
+- 不要削弱行数限制、权限过滤、元数据查询控制、Host 校验或路径穿越防护。
+- 修改连接池、事务和异步执行边界时，先阅读相邻实现和回归测试；不要把阻塞调用移回事件循环。
+- 商业实现留在 xpack；本仓库只保留对已发布包的调用和初始化。xpack 是必装硬依赖（启动即 import，无降级），许可证只做功能门控；加载场景见 `docs/agents/xpack.md`。
+
+## Chat 问题流程
+
+主要入口在 `backend/apps/chat/api/chat.py`：
+
+1. `POST /chat/start` 与 `POST /chat/assistant/start` 在工作空间内创建会话，并可绑定初始数据源或助手上下文。普通网页可在 `/chat/start` 传 `agent_mode=true` 创建无数据源会话；旧调用方仍需传数据源。
+2. 普通网页聊天通过 `POST /chat/question` 的可选 `agent_mode` 进入 `WebAgentService`；飞书机器人按已同步用户身份在进程内调用同一服务，并把回答私聊发给提问者。助手、嵌入页、旧调用方和 MCP 仍走 `LLMService`。网页的“数据分析”按钮以 `source_record_id` 发起新问题；旧 `POST /record/{chat_record_id}/{action_type}` 保留兼容。
+3. 旧流程先解析快速命令，普通问题进入 `stream_sql`；`/regenerate` 直接再生。两种流程都创建 `ChatRecord` 并异步执行。
+4. 已绑定数据源时，服务先提取关键词并扩展术语，再筛选适用的术语、SQL 示例和自定义提示词，随后组装 SQL 消息；筛选的作用域、命中和组合规则见 `docs/agents/knowledge-enhancement.md`。
+5. 网页智能问答先判断消息是普通对话还是数据问题。普通对话不访问数据源，回答正文仍保存到记录；数据问题若未绑定数据源，先由模型选择，再校验数据源工作空间归属和连接可用性。没有可用数据源时给出配置提示。
+6. 本地数据源的模型 SQL 走 `task/safe_query.py`：解析真实表与列、核对可见元数据、按真实表施加行权限，然后只读执行；动态助手保留其独立虚拟表契约。旧流程的样本行也要施加行权限。
+7. 智能问答按问题选择查询、澄清或结束；普通查询原则上一条 SQL，调查最多四条，单步返回最多 1000 行，给模型的结果进一步截断。上一条成功结果仅可在同一会话、用户和数据源内引用，且必须早于当前记录。网页按浏览器时区、飞书按 `Asia/Shanghai` 解释“今天”。
+8. 服务规范化并持久化查询结果；智能问答还流式输出并保存回答正文与查询步骤。图表配置必须匹配实际字段和数值；无法绘图时保留表格。
+9. 旧分析与预测接口仍基于既有图表记录执行；非会话式旧调用可请求渲染图片。
+10. 猜测问题与已配置的推荐问题分开生成。
+
+`ChatFinishStep` 允许一次执行在生成 SQL、查询数据或生成图表后停止。不要假设所有调用方都需要完整图表流程。
+
+### 记录状态与衍生关系
+
+- 记录终态二元：`finish=true` 即终态，`error` 非空即失败。生成 SQL、执行、图表任一阶段失败都写同一个 `error` 字段；失败阶段从已填充字段推断（有 SQL 无数据为执行失败，有数据无图表为图表失败），精确失败点看 ChatLog 的 `error` 标记。
+- 智能问答记录的 `answer` 和最多四条 `agent_steps` 独立持久化；网页分析按钮创建的记录在校验来源结果后保存 `source_record_id`，供历史中的“再问一次”继续引用原结果。调查中断时可保留已取得的证据和表格。其步骤不是独立的 `ChatRecord`。
+- 分析和预测各生成一条新的完整记录，复制源记录的问题、图表和数据，以 `analysis_record_id` / `predict_record_id` 指回源记录；衍生记录不能再被分析、预测或再生。
+- 再生记录以 `regenerate_record_id` 指向被再生记录，形成链，沿链回溯可取到原始问题。
+- 开场记录（`first_chat=true`）不能被分析、预测或再生；查找"上一条记录"时排除开场记录。
+- 问题快捷入口按位置分两个标签："猜你想问"是会话级快捷提问入口（开场记录展示数据源配置的推荐问题，输入框区域展示生成的猜测问题）；"继续问"是每次成功回答后的追问入口（生成的猜测问题）。
+
+验证要求与测试选择标准见 `docs/agents/testing.md`。
