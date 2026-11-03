@@ -69,7 +69,14 @@ const routerList = computed(() => {
     )
   })
 
-  return list
+  const navigationOrder = ['/chat', '/dashboard', '/ds', '/as', '/set']
+  return list.sort((left, right) => {
+    const rank = (path: string) => {
+      const index = navigationOrder.findIndex((prefix) => path.startsWith(prefix))
+      return index < 0 ? navigationOrder.length : index
+    }
+    return rank(left.path) - rank(right.path) || left.path.localeCompare(right.path)
+  })
 })
 </script>
 

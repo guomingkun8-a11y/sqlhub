@@ -73,7 +73,7 @@
             <Transition name="swap">
               <!-- ---------------- 登录 ---------------- -->
               <div v-if="mode === 'login'" key="login" class="auth-block">
-                <form class="auth-form" novalidate @submit.prevent="doLogin">
+                <form class="auth-form" autocomplete="off" novalidate @submit.prevent="doLogin">
                   <div class="field" :class="{ invalid: !!errors.username }">
                     <input
                       id="lg-account"
@@ -81,7 +81,7 @@
                       class="field-input"
                       type="text"
                       placeholder=" "
-                      autocomplete="username"
+                      autocomplete="off"
                       spellcheck="false"
                       @input="clearError('username')"
                     />
@@ -99,7 +99,7 @@
                       class="field-input has-trail"
                       :type="showPwd ? 'text' : 'password'"
                       placeholder=" "
-                      autocomplete="current-password"
+                      autocomplete="off"
                       @input="clearError('password')"
                     />
                     <label class="field-label" for="lg-pwd">密码</label>

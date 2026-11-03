@@ -66,7 +66,7 @@ const props = defineProps({
 .preview-head {
   display: flex;
   width: 100%;
-  min-width: 300px;
+  min-width: 0;
   height: 56px;
   padding: 16px 24px;
   border-bottom: 1px solid rgba(31, 35, 41, 0.15);
@@ -124,6 +124,34 @@ const props = defineProps({
           width: 28px;
           background: #1f23291a;
         }
+      }
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .preview-head {
+    height: auto;
+    min-height: 56px;
+    padding: 12px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    .canvas-name {
+      max-width: 100%;
+      flex: 1 1 100%;
+    }
+
+    .canvas-opt-button {
+      flex: 1 1 auto;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      gap: 8px;
+
+      .ed-button,
+      .custom-button {
+        margin-left: 0;
       }
     }
   }

@@ -317,9 +317,15 @@ const handleCurrentChange = (val: number) => {
           :content="$t('workspace.add_workspace')"
           placement="top"
         >
-          <el-icon size="18" @click="addWorkspace">
+          <el-button
+            class="add-workspace"
+            text
+            circle
+            :aria-label="$t('workspace.add_workspace')"
+            @click="addWorkspace"
+          >
             <icon_add_outlined></icon_add_outlined>
-          </el-icon>
+          </el-button>
         </el-tooltip>
       </div>
       <el-input
@@ -342,13 +348,19 @@ const handleCurrentChange = (val: number) => {
             :key="ele.name"
             class="model"
             :class="currentTable.name === ele.name && 'isActive'"
-            :title="ele.name"
-            @click="clickTable(ele)"
           >
-            <el-icon size="16">
-              <icon_form_outlined></icon_form_outlined>
-            </el-icon>
-            <span class="name">{{ ele.name }}</span>
+            <button
+              class="workspace-select"
+              type="button"
+              :title="ele.name"
+              :aria-pressed="currentTable.name === ele.name"
+              @click="clickTable(ele)"
+            >
+              <el-icon size="16">
+                <icon_form_outlined></icon_form_outlined>
+              </el-icon>
+              <span class="name">{{ ele.name }}</span>
+            </button>
 
             <el-popover
               trigger="click"
@@ -357,28 +369,35 @@ const handleCurrentChange = (val: number) => {
               placement="bottom"
             >
               <template #reference>
-                <el-icon
+                <el-button
                   class="more"
-                  size="16"
-                  style="margin-left: auto; color: #646a73"
+                  text
+                  circle
+                  :aria-label="`${t('ds.actions')}: ${ele.name}`"
+                  :title="`${t('ds.actions')}: ${ele.name}`"
                   @click.stop
                 >
                   <icon_more_outlined></icon_more_outlined>
-                </el-icon>
+                </el-button>
               </template>
               <div class="content">
-                <div class="item" @click.stop="addWorkspace(ele)">
+                <button type="button" class="item" @click.stop="addWorkspace(ele)">
                   <el-icon size="16">
                     <rename></rename>
                   </el-icon>
                   {{ $t('dashboard.rename') }}
-                </div>
-                <div v-if="ele.id !== 1" class="item" @click.stop="delWorkspace(ele)">
+                </button>
+                <button
+                  v-if="ele.id !== 1"
+                  type="button"
+                  class="item"
+                  @click.stop="delWorkspace(ele)"
+                >
                   <el-icon size="16">
                     <delIcon></delIcon>
                   </el-icon>
                   {{ $t('dashboard.delete') }}
-                </div>
+                </button>
               </div>
             </el-popover>
           </div>
@@ -466,31 +485,33 @@ const handleCurrentChange = (val: number) => {
               <template #default="scope">
                 <el-popover popper-class="system-workspace_user" placement="bottom">
                   <template #reference>
-                    <div style="display: flex; align-items: center; justify-content: space-between">
+                    <button class="member-type-trigger" type="button">
                       <span>{{
                         scope.row.weight === 1
                           ? t('workspace.administrator')
                           : t('workspace.ordinary_member')
                       }}</span>
-                      <el-icon style="display: none" size="16">
+                      <el-icon size="16">
                         <arrow_down></arrow_down>
                       </el-icon>
-                    </div>
+                    </button>
                   </template>
                   <div class="popover">
                     <div class="popover-content">
-                      <div
+                      <button
                         v-for="ele in userTypeList"
                         :key="ele.name"
+                        type="button"
                         class="popover-item"
                         :class="ele.name === scope.row.user_source && 'isActive'"
+                        :aria-pressed="ele.name === scope.row.user_source"
                         @click="handleUserTypeChange(ele.value, scope.row)"
                       >
                         <div class="model-name">{{ ele.name }}</div>
                         <el-icon size="16" class="done">
                           <icon_done_outlined></icon_done_outlined>
                         </el-icon>
-                      </div>
+                      </button>
                     </div>
                   </div>
                 </el-popover>
@@ -505,9 +526,15 @@ const handleCurrentChange = (val: number) => {
                     :content="$t('workspace.remove')"
                     placement="top"
                   >
-                    <el-icon class="action-btn" size="16" @click="deleteHandler(scope.row)">
+                    <el-button
+                      class="action-btn"
+                      text
+                      circle
+                      :aria-label="`${$t('workspace.remove')}: ${scope.row.name}`"
+                      @click="deleteHandler(scope.row)"
+                    >
                       <assigned></assigned>
-                    </el-icon>
+                    </el-button>
                   </el-tooltip>
                 </div>
               </template>
@@ -645,6 +672,12 @@ const handleCurrentChange = (val: number) => {
           border-radius: 6px;
         }
       }
+
+      .add-workspace {
+        width: 36px;
+        height: 36px;
+        color: var(--ed-color-primary);
+      }
     }
 
     .ed-input {
@@ -660,31 +693,13 @@ const handleCurrentChange = (val: number) => {
       padding-left: 16px;
 
       .more {
-        display: none;
-        &.ed-icon {
-          position: relative;
-          cursor: pointer;
-          margin-top: 4px;
-
-          &::after {
-            content: '';
-            background-color: #1f23291a;
-            position: absolute;
-            border-radius: 6px;
-            width: 24px;
-            height: 24px;
-            transform: translate(-50%, -50%);
-            top: 50%;
-            left: 50%;
-            display: none;
-          }
-
-          &:hover {
-            &::after {
-              display: block;
-            }
-          }
-        }
+        width: 32px;
+        height: 32px;
+        margin-left: auto;
+        color: var(--ink-600);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity var(--dur-fast) linear;
       }
 
       .no-result {
@@ -706,6 +721,20 @@ const handleCurrentChange = (val: number) => {
         padding-right: 8px;
         margin-bottom: 2px;
 
+        .workspace-select {
+          flex: 1;
+          min-width: 0;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          border: 0;
+          padding: 0;
+          color: inherit;
+          background: transparent;
+          text-align: left;
+          cursor: pointer;
+        }
+
         .name {
           margin-left: 8px;
           font-weight: 500;
@@ -718,9 +747,12 @@ const handleCurrentChange = (val: number) => {
         }
         &:hover {
           background: #1f23291a;
-          .more {
-            display: block;
-          }
+        }
+
+        &:hover .more,
+        &:focus-within .more {
+          opacity: 1;
+          pointer-events: auto;
         }
 
         &.isActive {
@@ -745,6 +777,7 @@ const handleCurrentChange = (val: number) => {
         line-height: 24px;
         display: flex;
         align-items: center;
+
         .line {
           height: 16px;
           width: 1px;
@@ -778,6 +811,22 @@ const handleCurrentChange = (val: number) => {
       }
 
       .preview-or-schema {
+        .member-type-trigger {
+          min-width: 0;
+          width: 100%;
+          min-height: 32px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: space-between;
+          border: 0;
+          padding: 0;
+          color: inherit;
+          background: transparent;
+          font: inherit;
+          text-align: left;
+          cursor: pointer;
+        }
+
         :deep(.user-source) {
           cursor: pointer;
           &:hover {
@@ -872,6 +921,92 @@ const handleCurrentChange = (val: number) => {
     }
   }
 }
+
+@media (hover: none), (pointer: coarse) {
+  .workspace .side-list .list-content .model .more {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .workspace {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .side-list {
+      width: 100%;
+      height: 164px;
+      flex: 0 0 164px;
+      padding: 8px 12px;
+      border-right: 0;
+      border-bottom: 1px solid var(--ink-200);
+
+      > .ed-input {
+        width: calc(100% - 16px) !important;
+        margin: 4px 8px;
+      }
+
+      .list-content {
+        position: static;
+        width: 100%;
+        height: calc(100% - 88px);
+        padding-left: 8px;
+      }
+    }
+
+    .info-table {
+      position: relative;
+      top: auto;
+      right: auto;
+      width: 100%;
+      height: auto;
+      min-height: 0;
+      flex: 1 1 auto;
+
+      .table-name {
+        padding: 12px 12px 0;
+
+        .notes {
+          flex-wrap: wrap;
+          gap: 8px;
+          margin: 12px 0;
+
+          .ed-button,
+          .ed-input {
+            width: 100% !important;
+            margin-left: 0;
+          }
+        }
+      }
+
+      .table-content {
+        height: calc(100% - 168px);
+        overflow-x: auto;
+        padding: 0 12px 12px;
+
+        &.show-pagination_height {
+          height: calc(100% - 220px);
+        }
+
+        .preview-or-schema {
+          overflow-x: auto;
+
+          :deep(.ed-table) {
+            min-width: 760px;
+          }
+        }
+      }
+
+      .pagination-container {
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding: 0 12px 8px;
+      }
+    }
+  }
+}
 </style>
 <style lang="less">
 .popover-card_workspack.popover-card_workspack.popover-card_workspack {
@@ -896,8 +1031,14 @@ const handleCurrentChange = (val: number) => {
       position: relative;
       padding: 0 12px;
       height: 40px;
+      width: 100%;
       display: flex;
       align-items: center;
+      border: 0;
+      color: inherit;
+      background: transparent;
+      font: inherit;
+      text-align: left;
       cursor: pointer;
       .ed-icon {
         margin-right: 8px;
@@ -948,12 +1089,18 @@ const handleCurrentChange = (val: number) => {
     }
     .popover-item {
       height: 32px;
+      width: 100%;
       display: flex;
       align-items: center;
       padding-left: 12px;
       padding-right: 8px;
       position: relative;
+      border: 0;
       border-radius: 6px;
+      color: inherit;
+      background: transparent;
+      font: inherit;
+      text-align: left;
       cursor: pointer;
       &:hover {
         background: #1f23291a;

@@ -447,6 +447,8 @@
             type="primary"
             class="input-icon"
             :disabled="isTyping"
+            :aria-label="t('qa.send')"
+            :title="t('qa.send')"
             @click.stop="($event: any) => sendMessage(undefined, $event)"
           >
             <el-icon size="16">
@@ -1235,8 +1237,8 @@ onBeforeUnmount(() => {
 
   .icon-btn {
     min-width: unset;
-    width: 26px;
-    height: 26px;
+    width: 40px;
+    height: 40px;
     font-size: 18px;
 
     --ed-button-text-color: var(--ink-900);
@@ -1595,6 +1597,53 @@ onBeforeUnmount(() => {
       --ed-button-hover-border-color: var(--accent-500);
       --ed-button-active-bg-color: var(--accent-50);
       --ed-button-active-border-color: var(--accent-500);
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .chat-container {
+    border-radius: 0;
+
+    :deep(.chat-record-list) {
+      border-radius: 0;
+    }
+
+    .chat-scroll {
+      padding-right: 12px !important;
+      padding-left: 12px !important;
+    }
+
+    .chat-footer {
+      padding-right: 12px;
+      padding-left: 12px;
+
+      .input-wrapper {
+        max-width: none;
+
+        .input-area :deep(.ed-textarea__inner) {
+          padding-right: 56px;
+          font-size: 16px;
+        }
+
+        .input-icon {
+          width: 40px;
+          height: 40px;
+          right: 8px;
+          bottom: 8px;
+        }
+      }
+    }
+
+    .welcome-content {
+      padding: 0 16px;
+
+      .greeting {
+        justify-content: center;
+        flex-wrap: wrap;
+        text-align: center;
+        font-size: 24px;
+      }
     }
   }
 }

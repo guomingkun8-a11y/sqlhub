@@ -700,10 +700,42 @@ strong {
   }
 }
 
+button:focus,
+a:focus,
+input:focus,
+select:focus,
+textarea:focus,
+[tabindex]:focus {
+  outline: 2px solid var(--ed-color-primary);
+  outline-offset: 2px;
+}
+
+@supports selector(:focus-visible) {
+  button:focus:not(:focus-visible),
+  a:focus:not(:focus-visible),
+  input:focus:not(:focus-visible),
+  select:focus:not(:focus-visible),
+  textarea:focus:not(:focus-visible),
+  [tabindex]:focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
 .ed-popper.is-pure:has(.ed-select-dropdown) {
   padding: 0 !important;
 
   .ed-select-dropdown {
     padding: 0 4px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

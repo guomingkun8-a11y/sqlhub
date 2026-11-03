@@ -47,21 +47,26 @@ defineProps<{
 
 <style scoped lang="less">
 .connection-card {
-  background-color: white;
-  border-radius: 16px;
-  padding: 24px 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  background-color: var(--paper);
+  border: 1px solid var(--ink-200);
+  border-radius: var(--radius-md);
+  padding: 20px 18px 64px;
   display: flex;
   position: relative;
-  transition: all 0.2s ease;
+  transition: border-color var(--dur-base) var(--ease-out-quart);
   align-items: center;
+
+  &:hover,
+  &:focus-within {
+    border-color: var(--ink-300);
+  }
 }
 
 .connection-icon {
   width: 48px;
   height: 48px;
   border-radius: 8px;
-  background-color: #e8f0fe;
+  background-color: var(--ed-color-primary-1a, rgba(28, 186, 144, 0.1));
   color: var(--primary-color);
   display: flex;
   align-items: center;
@@ -72,6 +77,7 @@ defineProps<{
 
 .connection-details {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -79,21 +85,21 @@ defineProps<{
   .connection-name {
     font-weight: 600;
     font-size: 18px;
-    color: #202124;
+    color: var(--ink-900);
     margin-bottom: 8px;
     line-height: 1.3;
     display: flex;
   }
 
   .connection-type {
-    color: #5f6368;
+    color: var(--ink-600);
     margin-bottom: 8px;
     font-size: 14px;
     display: flex;
   }
 
   .connection-host {
-    color: #5f6368;
+    color: var(--ink-600);
     margin-bottom: 8px;
     font-size: 14px;
     display: flex;
@@ -101,7 +107,7 @@ defineProps<{
   }
 
   .connection-last {
-    color: #5f6368;
+    color: var(--ink-600);
     font-size: 14px;
     margin-bottom: 0;
     display: flex;
@@ -139,5 +145,25 @@ defineProps<{
 .connection-status.needs-verification {
   background-color: #fef7e0;
   color: #fbbc05;
+}
+
+@media (max-width: 640px) {
+  .connection-card {
+    padding: 16px 14px 60px;
+    align-items: flex-start;
+  }
+
+  .connection-icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 12px;
+  }
+
+  .connection-details {
+    .connection-name,
+    .connection-host {
+      overflow-wrap: anywhere;
+    }
+  }
 }
 </style>
