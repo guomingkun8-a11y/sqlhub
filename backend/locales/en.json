@@ -80,7 +80,7 @@
     "agent_no_datasource": "No datasource is available yet. Upload data or connect a datasource to ask about it; you can still continue a general conversation."
   },
   "i18n_robot": {
-    "user_not_linked": "Your Feishu account is not linked to SQLBot. Please contact an administrator.",
+    "user_not_linked": "Your {platform} account is not linked to SQLBot. Please contact an administrator.",
     "user_disabled": "Your SQLBot account is unavailable. Please contact an administrator.",
     "agent_error": "Couldn't answer your question. Please try again later.",
     "busy": "I'm busy right now. Please try again shortly.",

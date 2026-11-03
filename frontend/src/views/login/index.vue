@@ -19,13 +19,7 @@
       <div class="auth-inner">
         <header class="brand-row reveal" style="--d: 0ms">
           <span class="brand-glyph" aria-hidden="true">
-            <svg viewBox="0 0 30 30" fill="none">
-              <rect x="0.5" y="0.5" width="29" height="29" rx="9" class="glyph-bg" />
-              <path
-                d="M9 20.5V9.4h4.1c2.7 0 4.3 1.4 4.3 3.7 0 1.6-.8 2.8-2.2 3.3l2.6 4.1h-2.5l-2.2-3.7h-1.6v3.7H9Zm2.5-5.6h1.5c1.1 0 1.8-.6 1.8-1.7s-.7-1.7-1.8-1.7h-1.5v3.4Z"
-                fill="#fff"
-              />
-            </svg>
+            <LOGO_fold />
           </span>
           <span class="brand-name">{{ brandName }}</span>
           <span class="brand-badge">智能问数</span>
@@ -454,6 +448,7 @@ import { useAppearanceStoreWithOut } from '@/stores/appearance'
 import Handler from './xpack/Handler.vue'
 import InitialPwdDialog from './InitialPwdDialog.vue'
 import { toLoginSuccess } from '@/utils/utils'
+import LOGO_fold from '@/assets/LOGO-fold.svg'
 
 const showLoading = ref(true)
 const router = useRouter()
@@ -672,7 +667,6 @@ const copyParallaxStyle = computed(() => ({
 }))
 
 /* 右栏跟随光标的光斑 */
-const paneEl = ref<HTMLElement | null>(null)
 const onPaneMove = (e: MouseEvent) => {
   const el = e.currentTarget as HTMLElement
   if (!el) return
@@ -771,9 +765,6 @@ watch(
       width: 100%;
       height: 100%;
       display: block;
-    }
-    .glyph-bg {
-      fill: var(--ink-900);
     }
   }
 

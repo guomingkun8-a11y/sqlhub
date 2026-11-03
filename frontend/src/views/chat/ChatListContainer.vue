@@ -60,10 +60,6 @@ function enterBatchMode() {
   batchMode.value = true
 }
 
-function exitBatchMode() {
-  batchMode.value = false
-}
-
 const _currentChatId = computed({
   get() {
     return props.currentChatId
@@ -218,8 +214,9 @@ function onChatDeleted(id: number) {
 
 function onBatchDelete(ids: number[]) {
   const idSet = new Set(ids)
-  _chatList.value = _chatList.value.filter((c) => !idSet.has(c.id))
-  if (_currentChatId.value !== undefined && idSet.has(_currentChatId.value)) {
+  _chatList.value = _chatList.value.filter((c) => c.id === undefined || !idSet.has(c.id))
+  const currentId = _currentChatId.value
+  if (currentId !== undefined && idSet.has(currentId)) {
     goEmpty()
   }
   ids.forEach((id) => emits('onChatDeleted', id))

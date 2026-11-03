@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
-import icon_spark from '@/assets/svg/icon_new_chat_outlined.svg'
 
 const { t } = useI18n()
 

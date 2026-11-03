@@ -10,7 +10,7 @@ SQLHub is an AI-powered data analysis workspace for business teams. People can a
 - **Follow-up context**: Continues a conversation using earlier results from the same chat.
 - **Controlled data access**: Checks user and workspace access, validates tables and columns, and enforces read-only SQL before execution. Configured data permission rules are applied to queries.
 - **Business context**: Supports configurable terminology, SQL examples, and prompts to reflect an organization's language and metrics.
-- **Multiple entry points**: Includes web chat, an MCP interface, and a Feishu bot. The Feishu bot queries as the linked user and sends group-query results privately to the requester.
+- **Multiple entry points**: Includes web chat, an MCP interface, and Feishu, DingTalk, and WeCom bots. Each bot queries as the linked user and sends group-query results privately to the requester.
 
 ## How It Works
 

@@ -17,14 +17,16 @@ export interface RobotStatus {
 }
 
 export const robotApi = {
-  getConfig: () => request.get<RobotConfig>('/system/robot/config'),
+  listConfigs: () => request.get<RobotConfig[]>('/system/robot/config'),
   saveConfig: (data: {
     platform: string
     app_id?: string
     app_secret?: string
     auto_start: boolean
   }) => request.put<RobotConfig>('/system/robot/config', data),
-  start: () => request.post<RobotStatus>('/system/robot/start'),
-  stop: () => request.post<RobotStatus>('/system/robot/stop'),
-  status: () => request.get<RobotStatus>('/system/robot/status'),
+  listStatus: () => request.get<RobotStatus[]>('/system/robot/status'),
+  start: (platform: string) =>
+    request.post<RobotStatus>('/system/robot/start', null, { params: { platform } }),
+  stop: (platform: string) =>
+    request.post<RobotStatus>('/system/robot/stop', null, { params: { platform } }),
 }

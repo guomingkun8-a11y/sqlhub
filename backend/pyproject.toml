@@ -57,6 +57,8 @@ dependencies = [
     "thrift-sasl",
     "dbutils>=3.1.2",
     "mcp<2.0.0",
+    "dingtalk-stream>=0.24.3",
+    "wecom-aibot-sdk>=1.0.8",
 ]
 
 [project.optional-dependencies]

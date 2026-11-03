@@ -80,7 +80,7 @@
     "agent_no_datasource": "目前沒有可用的資料來源。請先上傳資料或連接資料來源，再詢問具體資料；一般對話可以繼續。"
   },
   "i18n_robot": {
-    "user_not_linked": "找不到已關聯的飛書帳號，請聯絡管理員完成綁定後再試。",
+    "user_not_linked": "找不到已關聯的{platform}帳號，請聯絡管理員完成綁定後再試。",
     "user_disabled": "您的 SQLBot 帳號目前無法使用，請聯絡管理員。",
     "agent_error": "提問失敗，請稍後再試。",
     "busy": "目前正忙，請稍後再試。",

@@ -96,8 +96,15 @@ onBeforeMount(() => {
       </template>
       <template v-else>
         <div class="default-sqlbot" @click="toChatIndex">
+          <img v-if="loginBg" :src="loginBg" class="brand-icon" alt="" />
+          <custom_small
+            v-else-if="appearanceStore.themeColor !== 'default'"
+            class="brand-icon"
+          ></custom_small>
+          <LOGO_fold v-else class="brand-icon"></LOGO_fold>
           <span
-            :style="collapse ? { maxWidth: 'auto' } : { maxWidth: '150px' }"
+            v-if="!collapse"
+            :style="{ maxWidth: '150px' }"
             :title="appearanceStore.name"
             class="ellipsis"
             >{{ appearanceStore.name }}</span
@@ -171,6 +178,13 @@ onBeforeMount(() => {
       cursor: pointer;
       margin-bottom: 14px;
       .collapse-icon {
+        margin-right: 8px;
+      }
+
+      .brand-icon {
+        width: 30px;
+        height: 30px;
+        flex-shrink: 0;
         margin-right: 8px;
       }
     }
@@ -247,6 +261,14 @@ onBeforeMount(() => {
       min-width: 64px;
       padding: 16px 12px;
       // animation: rotate 0.1s ease-in-out;
+
+      .default-sqlbot {
+        justify-content: center;
+
+        .brand-icon {
+          margin-right: 0;
+        }
+      }
 
       .ed-menu--collapse {
         --ed-menu-icon-width: 32px;

@@ -77,7 +77,7 @@ _Avoid_: 工作空间默认模型（该概念不存在）
 _Avoid_: Assistant、dashboard
 
 **Chat Origin / 会话来源**:
-会话创建入口的溯源标记：页面、MCP、小助手或飞书机器人。
+会话创建入口的溯源标记：页面、MCP、小助手或飞书、钉钉、企业微信机器人。
 _Avoid_: 助手目标域名（Assistant Domain）
 
 **Chat Record / 会话记录**:

@@ -80,7 +80,7 @@
     "agent_no_datasource": "当前没有可用的数据源。请先上传数据或连接数据源，再提问具体数据；普通对话可以继续。"
   },
   "i18n_robot": {
-    "user_not_linked": "未找到已关联的飞书账号，请联系管理员绑定后重试。",
+    "user_not_linked": "未找到已关联的{platform}账号，请联系管理员绑定后重试。",
     "user_disabled": "您的 SQLBot 账号当前不可用，请联系管理员。",
     "agent_error": "提问失败，请稍后重试。",
     "busy": "当前正忙，请稍后重试。",

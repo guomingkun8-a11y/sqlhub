@@ -85,18 +85,24 @@ async def lifespan(app: FastAPI):
 
 
 def _auto_start_robot() -> None:
-    """若机器人配置了 auto_start，则在后端启动时自动拉起。"""
+    """若机器人配置了 auto_start，则在后端启动时按平台逐个拉起。"""
     try:
         from sqlmodel import Session
         from common.core.db import engine
+        from apps.system.core.robot_manager import SUPPORTED_PLATFORMS, robot_manager
         from apps.system.crud.robot_manage import get_config, get_app_secret
-        from apps.system.core.robot_manager import robot_manager
 
         with Session(engine) as session:
-            config = get_config(session)
-            if config and config.auto_start and config.app_id and get_app_secret(session):
-                result = robot_manager.start(session, platform="feishu")
-                SQLBotLogUtil.info(f"机器人自动启动结果: {result.get('message', '')}")
+            for platform in SUPPORTED_PLATFORMS:
+                config = get_config(session, platform)
+                if not (config and config.auto_start and config.app_id):
+                    continue
+                if not get_app_secret(session, platform):
+                    continue
+                result = robot_manager.start(session, platform=platform)
+                SQLBotLogUtil.info(
+                    f"{platform} 机器人自动启动结果: {result.get('message', '')}"
+                )
     except Exception as e:  # noqa
         SQLBotLogUtil.exception(f"机器人自动启动失败: {e}")
 
