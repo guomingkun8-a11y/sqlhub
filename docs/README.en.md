@@ -1,6 +1,16 @@
-# SQLHub
+<div align="center">
+  <img src="../frontend/src/assets/logo-sqlhub-source.png" alt="SQLHub" width="520" />
+  <p>Ask in natural language. Let your data answer.</p>
+  <p>
+    <a href="../README.md">中文</a> · English
+  </p>
+  <p>
+    <a href="https://github.com/guomingkun8-a11y/sqlhub/stargazers"><img src="https://img.shields.io/github/stars/guomingkun8-a11y/sqlhub?style=flat-square&logo=github" alt="GitHub stars" /></a>
+    <a href="https://github.com/guomingkun8-a11y/sqlhub/issues"><img src="https://img.shields.io/github/issues/guomingkun8-a11y/sqlhub?style=flat-square" alt="GitHub issues" /></a>
+  </p>
+</div>
 
-SQLHub is an AI-powered data analysis workspace for business teams. People can ask questions in natural language: ordinary conversation receives a direct reply, while data questions query configured sources and return a written answer, a table, a chart, or a deeper investigation.
+SQLHub is an AI-powered data analysis workspace for business teams. Ask questions in natural language: ordinary conversation gets a direct reply, while data questions query connected sources and return a written answer, a table, a chart, or a deeper investigation.
 
 ## What It Does
 
@@ -51,6 +61,6 @@ cd backend
 uv run pytest -q
 ```
 
-## License and Source
+## License
 
-Read the repository's [LICENSE](../LICENSE). This project contains modifications based on SQLBot open-source code. Use and distribution must comply with that license and its additional conditions, including required attribution and notices.
+This project is licensed under GPLv3 with additional conditions. Read the repository's [LICENSE](../LICENSE) before using, modifying, or distributing the code.

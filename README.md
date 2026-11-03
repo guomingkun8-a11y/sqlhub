@@ -1,6 +1,16 @@
-# SQLHub
+<div align="center">
+  <img src="frontend/src/assets/logo-sqlhub-source.png" alt="SQLHub" width="520" />
+  <p>用自然语言提问，让数据回答问题。</p>
+  <p>
+    <a href="docs/README.en.md">English</a> · 中文
+  </p>
+  <p>
+    <a href="https://github.com/guomingkun8-a11y/sqlhub/stargazers"><img src="https://img.shields.io/github/stars/guomingkun8-a11y/sqlhub?style=flat-square&logo=github" alt="GitHub stars" /></a>
+    <a href="https://github.com/guomingkun8-a11y/sqlhub/issues"><img src="https://img.shields.io/github/issues/guomingkun8-a11y/sqlhub?style=flat-square" alt="GitHub issues" /></a>
+  </p>
+</div>
 
-SQLHub 是面向业务团队的智能数据分析工作台。用户可以像和同事交流一样提问：普通对话直接回答，涉及数据时再查询已连接的数据源，并根据问题返回文字、表格、图表或进一步分析。
+SQLHub 是面向业务团队的智能数据分析工作台。用户可以像和同事交流一样提问：普通对话直接回答，涉及数据时查询已连接的数据源，并根据问题返回文字、表格、图表或进一步分析。
 
 ## 产品能力
 
@@ -51,6 +61,6 @@ cd backend
 uv run pytest -q
 ```
 
-## 许可证与来源
+## 许可证
 
-请阅读仓库中的 [LICENSE](LICENSE)。本项目包含基于 SQLBot 开源代码修改的部分；使用和分发时须遵守该许可证及其中列出的附加条件，并保留要求保留的标识和版权信息。
+本项目采用 GPLv3 并附带额外条件。使用、修改或分发前，请阅读仓库中的 [LICENSE](LICENSE)。
